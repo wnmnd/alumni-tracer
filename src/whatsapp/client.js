@@ -29,7 +29,10 @@ async function sendFlowMessage(to, { flowToken, screen, headerText, bodyText, ct
       body: {
         text:
           bodyText ||
-          'Terima kasih telah menghubungi BAZNAS. Silakan isi formulir Tracer Alumni berikut ini.',
+          'Assalamualaikum Wr. Wb.\n\n' +
+            'Untuk Alumni Penerima Beasiswa BAZNAS, kami mengundang Anda untuk mengisi Formulir Tracer Alumni guna mendata kiprah, kelulusan, dan perjalanan karier Anda setelah menerima beasiswa.\n\n' +
+            'Mohon diisi dengan data yang benar dan lengkap. Terima kasih atas partisipasi dan kontribusi Anda bagi BAZNAS.\n\n' +
+            'Wassalamualaikum Wr. Wb.',
       },
       footer: { text: 'Data Anda akan tersimpan dengan aman' },
       action: {
