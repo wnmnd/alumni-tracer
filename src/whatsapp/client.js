@@ -40,7 +40,7 @@ async function sendFlowMessage(to, { flowToken, screen, headerText, bodyText, ct
           flow_id: config.flow.id,
           flow_cta: ctaText || 'Isi Formulir Alumni',
           flow_action: 'navigate',
-          flow_action_payload: { screen: screen || 'DATA_DIRI', data: {} },
+          flow_action_payload: { screen: screen || 'DATA_DIRI' },
         },
       },
     },
