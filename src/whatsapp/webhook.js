@@ -34,7 +34,7 @@ router.post('/webhook', async (req, res) => {
       await handleMessage(message);
     }
   } catch (err) {
-    console.error('Error handling webhook payload', err);
+    console.error('Error handling webhook payload:', err.response?.data || err.message);
   }
 });
 

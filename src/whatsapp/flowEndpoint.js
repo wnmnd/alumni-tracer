@@ -13,7 +13,7 @@ router.post('/flow-data-exchange', async (req, res) => {
   try {
     decrypted = decryptRequest(req.body, config.flow.privateKey, config.flow.privateKeyPassphrase);
   } catch (err) {
-    console.error('Failed to decrypt Flow request', err);
+    console.error('Failed to decrypt Flow request:', err.message);
     return res.sendStatus(421);
   }
 
@@ -24,7 +24,7 @@ router.post('/flow-data-exchange', async (req, res) => {
     const responsePayload = await handleAction({ action, screen, data, flow_token });
     return res.send(encryptResponse(responsePayload, aesKey, iv));
   } catch (err) {
-    console.error('Error handling Flow data exchange', err);
+    console.error('Error handling Flow data exchange:', err.response?.data || err.message);
     return res.send(
       encryptResponse(
         {
