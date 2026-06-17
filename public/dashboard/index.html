@@ -125,13 +125,24 @@
     box-shadow: 0 12px 40px rgba(0,0,0,0.3);
     display: none; flex-direction: column;
     overflow: hidden; z-index: 50;
+    transition: width 0.2s ease, max-height 0.2s ease;
   }
   @media (max-width: 480px) { #chatPanel { width: calc(100vw - 32px); right: 16px; } }
   #chatPanel.open { display: flex; }
+  #chatPanel.expanded {
+    width: min(880px, calc(100vw - 48px));
+    max-height: min(760px, calc(100vh - 140px));
+  }
   #chatHeader {
     background: var(--green); color: #fff; padding: 12px 16px;
     font-size: 14px; font-weight: 600;
+    display: flex; align-items: center; justify-content: space-between;
   }
+  #chatExpandBtn {
+    background: none; border: none; color: rgba(255,255,255,0.85);
+    cursor: pointer; padding: 4px; display: flex; border-radius: 6px;
+  }
+  #chatExpandBtn:hover { background: rgba(255,255,255,0.15); color: #fff; }
   #chatLog { flex: 1; overflow-y: auto; padding: 12px; font-size: 13px; }
   .chat-msg { margin-bottom: 10px; line-height: 1.4; }
   .chat-msg.user { text-align: right; color: var(--green-dark); }
@@ -270,7 +281,17 @@
   </svg>
 </button>
 <div id="chatPanel">
-  <div id="chatHeader">Asisten Data Tracer Alumni</div>
+  <div id="chatHeader">
+    <span>Asisten Data Tracer Alumni</span>
+    <button id="chatExpandBtn" title="Perbesar tampilan" aria-label="Perbesar tampilan">
+      <svg id="chatExpandIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 3 21 3 21 9"></polyline>
+        <polyline points="9 21 3 21 3 15"></polyline>
+        <line x1="21" y1="3" x2="14" y2="10"></line>
+        <line x1="3" y1="21" x2="10" y2="14"></line>
+      </svg>
+    </button>
+  </div>
   <div id="chatLog"></div>
   <div id="chatInputRow">
     <input id="chatInput" type="text" placeholder="Tanya tentang data alumni..." />
@@ -530,9 +551,19 @@ const chatPanel = document.getElementById('chatPanel');
 const chatLog = document.getElementById('chatLog');
 const chatInput = document.getElementById('chatInput');
 const chatSendBtn = document.getElementById('chatSendBtn');
+const chatExpandBtn = document.getElementById('chatExpandBtn');
+const chatExpandIcon = document.getElementById('chatExpandIcon');
 let chatHistory = [];
 
+const MAXIMIZE_ICON = '<polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line>';
+const RESTORE_ICON = '<polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" y1="10" x2="21" y2="3"></line><line x1="3" y1="21" x2="10" y2="14"></line>';
+
 chatToggle.addEventListener('click', () => chatPanel.classList.toggle('open'));
+chatExpandBtn.addEventListener('click', () => {
+  const expanded = chatPanel.classList.toggle('expanded');
+  chatExpandIcon.innerHTML = expanded ? RESTORE_ICON : MAXIMIZE_ICON;
+  chatExpandBtn.title = expanded ? 'Kembalikan ukuran normal' : 'Perbesar tampilan';
+});
 
 // Minimal, safe markdown renderer: builds DOM nodes directly (no innerHTML
 // with model output) so there's no script-injection surface, while still
