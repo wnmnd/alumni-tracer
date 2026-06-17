@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tabel Data - Dashboard Tracer Alumni BAZNAS</title>
+<style>
+  :root {
+    --green: #14320b;
+    --green-dark: #0d2508;
+    --gold: #cd9933;
+    --gold-light: #e0b65c;
+    --cream: #faf7f0;
+    --ink: #1f2a17;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+  }
+  header.topbar {
+    background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
+    color: #fff;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 4px solid var(--gold);
+  }
+  header.topbar h1 { font-size: 18px; margin: 0; }
+  header.topbar .badge { font-size: 11px; letter-spacing: 0.08em; color: var(--gold-light); font-weight: 700; }
+  .topbar-right { display: flex; align-items: center; gap: 14px; }
+  nav.tabs { display: flex; gap: 6px; }
+  nav.tabs a {
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    font-size: 13px;
+    padding: 8px 14px;
+    border-radius: 8px;
+  }
+  nav.tabs a:hover { background: rgba(255,255,255,0.1); color: #fff; }
+  nav.tabs a.active { background: rgba(255,255,255,0.18); color: #fff; font-weight: 600; }
+  #logoutBtn {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.4);
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  #logoutBtn:hover { background: rgba(255,255,255,0.25); }
+
+  main { max-width: 1400px; margin: 0 auto; padding: 24px; }
+
+  .filter-bar {
+    background: #fff;
+    border-radius: 14px;
+    padding: 16px 18px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    margin-bottom: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-end;
+  }
+  .filter-field { display: flex; flex-direction: column; gap: 4px; }
+  .filter-field label { font-size: 11px; font-weight: 600; color: #6b7280; }
+  .filter-field input, .filter-field select {
+    padding: 8px 10px;
+    border: 1px solid #d8d4ca;
+    border-radius: 8px;
+    font-size: 13px;
+    background: #fff;
+    min-width: 150px;
+  }
+  .filter-field input:focus, .filter-field select:focus { outline: none; border-color: var(--green); }
+  #searchInput { min-width: 220px; }
+  #resetBtn {
+    border: 1px solid var(--green);
+    background: #fff;
+    color: var(--green);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    height: 37px;
+  }
+  #resetBtn:hover { background: var(--cream); }
+
+  .result-info { font-size: 13px; color: #6b7280; margin-bottom: 10px; }
+  .result-info strong { color: var(--green-dark); }
+
+  .table-wrap {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    overflow-x: auto;
+    margin-bottom: 18px;
+  }
+  table { border-collapse: collapse; width: 100%; font-size: 12.5px; white-space: nowrap; }
+  thead th {
+    position: sticky; top: 0;
+    background: var(--green);
+    color: #fff;
+    text-align: left;
+    padding: 10px 14px;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+  }
+  thead th:hover { background: var(--green-dark); }
+  thead th .sort-icon { display: inline-block; width: 10px; margin-left: 4px; opacity: 0.6; transition: transform 0.15s; }
+  thead th .sort-icon.desc { transform: rotate(180deg); }
+  tbody td { padding: 9px 14px; border-bottom: 1px solid #f0eee6; }
+  tbody tr:hover { background: var(--cream); }
+  tbody td a { color: var(--green); font-weight: 600; text-decoration: none; }
+  tbody td a:hover { text-decoration: underline; }
+  #emptyState { text-align: center; padding: 40px; color: #6b7280; display: none; }
+
+  .pagination { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 16px 0 4px; }
+  .pagination button {
+    border: 1px solid var(--green);
+    background: #fff;
+    color: var(--green);
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .pagination button:disabled { opacity: 0.4; cursor: default; }
+  .pagination button:not(:disabled):hover { background: var(--cream); }
+  .pagination span { font-size: 13px; color: #6b7280; }
+
+  #loadingMsg, #errorMsg { text-align: center; padding: 60px 0; color: #6b7280; }
+  #errorMsg { color: #b91c1c; display: none; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div>
+    <span class="badge">BAZNAS</span>
+    <h1>Dashboard Tracer Alumni</h1>
+  </div>
+  <div class="topbar-right">
+    <nav class="tabs">
+      <a href="/dashboard">Grafik</a>
+      <a href="/dashboard/table" class="active">Tabel Data</a>
+    </nav>
+    <button id="logoutBtn">Keluar</button>
+  </div>
+</header>
+
+<main>
+  <div id="loadingMsg">Memuat data...</div>
+  <div id="errorMsg"></div>
+
+  <div id="content" style="display:none;">
+    <div class="filter-bar">
+      <div class="filter-field">
+        <label>Cari</label>
+        <input id="searchInput" type="text" placeholder="Nama, kampus, jurusan, dll..." />
+      </div>
+      <div class="filter-field"><label>Channel</label><select id="filterChannel"></select></div>
+      <div class="filter-field"><label>Sektor Pekerjaan</label><select id="filterSektor"></select></div>
+      <div class="filter-field"><label>Provinsi</label><select id="filterProvinsi"></select></div>
+      <div class="filter-field"><label>Program Beasiswa</label><select id="filterProgram"></select></div>
+      <div class="filter-field"><label>Tahun Masuk</label><select id="filterTahun"></select></div>
+      <div class="filter-field"><label>Jenis Kelamin</label><select id="filterGender"></select></div>
+      <button id="resetBtn">Reset Filter</button>
+    </div>
+
+    <div class="result-info">Menampilkan <strong id="filteredCount">0</strong> dari <strong id="totalCount">0</strong> data</div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr id="headerRow"></tr></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+      <div id="emptyState">Tidak ada data yang cocok dengan filter.</div>
+    </div>
+
+    <div class="pagination">
+      <button id="prevBtn">&larr; Sebelumnya</button>
+      <span id="pageInfo">Halaman 1 / 1</span>
+      <button id="nextBtn">Selanjutnya &rarr;</button>
+    </div>
+  </div>
+</main>
+
+<script>
+const DISPLAY_COLUMNS = [
+  'Timestamp', 'Channel', 'Nama Lengkap', 'Jenis Kelamin', 'Provinsi', 'Domisili',
+  'Alumni Program Beasiswa', 'Asal Kampus', 'Jurusan', 'Tahun Masuk Beasiswa',
+  'Tanggal Lulus Pendidikan dengan Beasiswa BAZNAS', 'IPK', 'Lama Kuliah (Bulan)',
+  'Sektor Pekerjaan', 'Kategori Sektor', 'Tempat Bekerja', 'Posisi/Jabatan di Tempat Kerja',
+  'Pendapatan', 'Masa Tunggu (Bulan)', 'Jobdesk Singkat', 'Kata-Kata Motivasi',
+  'Nomor WhatsApp', 'Telegram Username', 'Nomor HP', 'Instagram/Facebook', 'Link Foto Terbaik',
+];
+const SEARCH_FIELDS = ['Nama Lengkap', 'Asal Kampus', 'Jurusan', 'Tempat Bekerja', 'Posisi/Jabatan di Tempat Kerja', 'Domisili'];
+const PAGE_SIZE = 25;
+
+let allRows = [];
+let filteredRows = [];
+let currentPage = 1;
+let sortColumn = 'Timestamp';
+let sortDir = 'desc';
+
+function distinctValues(rows, field) {
+  const set = new Set();
+  rows.forEach((r) => { const v = (r[field] || '').toString().trim(); if (v) set.add(v); });
+  return Array.from(set).sort();
+}
+function populateSelect(id, values, allLabel) {
+  const el = document.getElementById(id);
+  el.innerHTML = '<option value="">' + allLabel + '</option>' + values.map((v) => `<option value="${v}">${v}</option>`).join('');
+}
+function formatTimestamp(v) {
+  if (!v) return '-';
+  const d = new Date(v);
+  if (isNaN(d.getTime())) return v;
+  return d.toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+}
+function renderCell(field, value) {
+  if (field === 'Timestamp') return formatTimestamp(value);
+  if (field === 'Link Foto Terbaik' && value) {
+    const links = value.split(',').map((l) => l.trim()).filter(Boolean);
+    return links.map((l, i) => `<a href="${l}" target="_blank" rel="noopener">Foto ${i + 1}</a>`).join(' ');
+  }
+  return value || '-';
+}
+
+function applyFilters() {
+  const search = document.getElementById('searchInput').value.trim().toLowerCase();
+  const channel = document.getElementById('filterChannel').value;
+  const sektor = document.getElementById('filterSektor').value;
+  const provinsi = document.getElementById('filterProvinsi').value;
+  const program = document.getElementById('filterProgram').value;
+  const tahun = document.getElementById('filterTahun').value;
+  const gender = document.getElementById('filterGender').value;
+
+  filteredRows = allRows.filter((r) => {
+    if (channel && r['Channel'] !== channel) return false;
+    if (sektor && r['Sektor Pekerjaan'] !== sektor) return false;
+    if (provinsi && r['Provinsi'] !== provinsi) return false;
+    if (program && r['Alumni Program Beasiswa'] !== program) return false;
+    if (tahun && String(r['Tahun Masuk Beasiswa']) !== tahun) return false;
+    if (gender && r['Jenis Kelamin'] !== gender) return false;
+    if (search) {
+      const haystack = SEARCH_FIELDS.map((f) => (r[f] || '').toString().toLowerCase()).join(' ');
+      if (!haystack.includes(search)) return false;
+    }
+    return true;
+  });
+
+  sortRows();
+  currentPage = 1;
+  renderTable();
+}
+
+function sortRows() {
+  filteredRows.sort((a, b) => {
+    let av = a[sortColumn];
+    let bv = b[sortColumn];
+    const an = Number(av), bn = Number(bv);
+    let cmp;
+    if (av !== '' && bv !== '' && Number.isFinite(an) && Number.isFinite(bn)) cmp = an - bn;
+    else cmp = String(av || '').localeCompare(String(bv || ''));
+    return sortDir === 'asc' ? cmp : -cmp;
+  });
+}
+
+function renderHeader() {
+  const headerRow = document.getElementById('headerRow');
+  headerRow.innerHTML = DISPLAY_COLUMNS.map((col) => `
+    <th data-col="${col}">
+      ${col}
+      <span class="sort-icon ${sortColumn === col && sortDir === 'desc' ? 'desc' : ''}" style="${sortColumn === col ? '' : 'visibility:hidden'}">
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"></polyline></svg>
+      </span>
+    </th>
+  `).join('');
+
+  headerRow.querySelectorAll('th').forEach((th) => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.col;
+      if (sortColumn === col) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+      else { sortColumn = col; sortDir = 'asc'; }
+      sortRows();
+      renderHeader();
+      renderTable();
+    });
+  });
+}
+
+function renderTable() {
+  document.getElementById('filteredCount').textContent = filteredRows.length;
+  document.getElementById('totalCount').textContent = allRows.length;
+
+  const totalPages = Math.max(1, Math.ceil(filteredRows.length / PAGE_SIZE));
+  if (currentPage > totalPages) currentPage = totalPages;
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const pageRows = filteredRows.slice(start, start + PAGE_SIZE);
+
+  const tbody = document.getElementById('tableBody');
+  const emptyState = document.getElementById('emptyState');
+  if (!pageRows.length) {
+    tbody.innerHTML = '';
+    emptyState.style.display = 'block';
+  } else {
+    emptyState.style.display = 'none';
+    tbody.innerHTML = pageRows.map((row) => `<tr>${DISPLAY_COLUMNS.map((col) => `<td>${renderCell(col, row[col])}</td>`).join('')}</tr>`).join('');
+  }
+
+  document.getElementById('pageInfo').textContent = `Halaman ${currentPage} / ${totalPages}`;
+  document.getElementById('prevBtn').disabled = currentPage <= 1;
+  document.getElementById('nextBtn').disabled = currentPage >= totalPages;
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => { currentPage--; renderTable(); });
+document.getElementById('nextBtn').addEventListener('click', () => { currentPage++; renderTable(); });
+document.getElementById('searchInput').addEventListener('input', applyFilters);
+['filterChannel', 'filterSektor', 'filterProvinsi', 'filterProgram', 'filterTahun', 'filterGender'].forEach((id) => {
+  document.getElementById(id).addEventListener('change', applyFilters);
+});
+document.getElementById('resetBtn').addEventListener('click', () => {
+  document.getElementById('searchInput').value = '';
+  ['filterChannel', 'filterSektor', 'filterProvinsi', 'filterProgram', 'filterTahun', 'filterGender'].forEach((id) => {
+    document.getElementById(id).value = '';
+  });
+  applyFilters();
+});
+
+async function loadData() {
+  try {
+    const res = await fetch('/api/dashboard-data');
+    if (res.status === 401) {
+      window.location.href = '/login';
+      return;
+    }
+    const result = await res.json();
+    if (!result.success) throw new Error(result.message || 'Gagal memuat data');
+
+    allRows = result.rows.filter((r) => r['Channel'] !== 'Test');
+
+    populateSelect('filterChannel', distinctValues(allRows, 'Channel'), 'Semua Channel');
+    populateSelect('filterSektor', distinctValues(allRows, 'Sektor Pekerjaan'), 'Semua Sektor');
+    populateSelect('filterProvinsi', distinctValues(allRows, 'Provinsi'), 'Semua Provinsi');
+    populateSelect('filterProgram', distinctValues(allRows, 'Alumni Program Beasiswa'), 'Semua Program');
+    populateSelect('filterTahun', distinctValues(allRows, 'Tahun Masuk Beasiswa'), 'Semua Tahun');
+    populateSelect('filterGender', distinctValues(allRows, 'Jenis Kelamin'), 'Semua');
+
+    filteredRows = allRows.slice();
+    sortRows();
+    renderHeader();
+
+    document.getElementById('loadingMsg').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+    renderTable();
+  } catch (err) {
+    document.getElementById('loadingMsg').style.display = 'none';
+    const errBox = document.getElementById('errorMsg');
+    errBox.textContent = 'Gagal memuat data: ' + err.message;
+    errBox.style.display = 'block';
+  }
+}
+loadData();
+
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await fetch('/api/logout', { method: 'POST' });
+  window.location.href = '/login';
+});
+</script>
+</body>
+</html>

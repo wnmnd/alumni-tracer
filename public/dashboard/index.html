@@ -33,6 +33,17 @@
   }
   header.topbar h1 { font-size: 18px; margin: 0; }
   header.topbar .badge { font-size: 11px; letter-spacing: 0.08em; color: var(--gold-light); font-weight: 700; }
+  .topbar-right { display: flex; align-items: center; gap: 14px; }
+  nav.tabs { display: flex; gap: 6px; }
+  nav.tabs a {
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    font-size: 13px;
+    padding: 8px 14px;
+    border-radius: 8px;
+  }
+  nav.tabs a:hover { background: rgba(255,255,255,0.1); color: #fff; }
+  nav.tabs a.active { background: rgba(255,255,255,0.18); color: #fff; font-weight: 600; }
   #logoutBtn {
     background: rgba(255,255,255,0.15);
     border: 1px solid rgba(255,255,255,0.4);
@@ -140,7 +151,13 @@
     <span class="badge">BAZNAS</span>
     <h1>Dashboard Tracer Alumni</h1>
   </div>
-  <button id="logoutBtn">Keluar</button>
+  <div class="topbar-right">
+    <nav class="tabs">
+      <a href="/dashboard" class="active">Grafik</a>
+      <a href="/dashboard/table">Tabel Data</a>
+    </nav>
+    <button id="logoutBtn">Keluar</button>
+  </div>
 </header>
 
 <main>

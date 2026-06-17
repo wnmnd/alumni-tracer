@@ -14,4 +14,8 @@ router.get('/dashboard', requireAuthPage, (req, res) => {
   return res.sendFile(path.join(publicDir, 'index.html'));
 });
 
+router.get('/dashboard/table', requireAuthPage, (req, res) => {
+  return res.sendFile(path.join(publicDir, 'table.html'));
+});
+
 module.exports = router;
