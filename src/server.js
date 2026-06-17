@@ -21,7 +21,6 @@ app.use(
 );
 
 app.get('/healthz', (_req, res) => res.send('ok'));
-app.get('/telegram/ping', (_req, res) => res.send('telegram-ping-ok'));
 
 app.use(webhookRouter);
 app.use(flowEndpointRouter);
