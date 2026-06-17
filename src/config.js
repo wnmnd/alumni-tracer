@@ -24,11 +24,9 @@ module.exports = {
     privateKeyPassphrase: process.env.FLOW_PRIVATE_KEY_PASSPHRASE,
   },
 
-  google: {
-    serviceAccountJson: process.env.GOOGLE_SERVICE_ACCOUNT_JSON,
-    sheetId: process.env.GOOGLE_SHEET_ID,
-    sheetName: process.env.GOOGLE_SHEET_NAME || 'Alumni',
-    driveFolderId: process.env.GOOGLE_DRIVE_FOLDER_ID,
+  appsScript: {
+    url: process.env.APPS_SCRIPT_URL,
+    secret: process.env.APPS_SCRIPT_SECRET,
   },
 
   telegram: {

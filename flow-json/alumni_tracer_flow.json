@@ -27,11 +27,25 @@
                 "required": true
               },
               {
-                "type": "TextInput",
+                "type": "Dropdown",
                 "name": "program_beasiswa",
                 "label": "Alumni Program Beasiswa",
-                "input-type": "text",
-                "required": true
+                "required": true,
+                "data-source": [
+                  { "id": "cendekia_dalam_negeri", "title": "Beasiswa Cendekia BAZNAS - Dalam Negeri" },
+                  { "id": "cendekia_mahad_aly", "title": "Beasiswa Cendekia BAZNAS - Ma'had Aly" },
+                  { "id": "cendekia_luar_negeri", "title": "Beasiswa Cendekia BAZNAS - Luar Negeri" },
+                  { "id": "kaderisasi_seribu_ulama", "title": "Kaderisasi Seribu Ulama" },
+                  { "id": "riset_umum", "title": "Beasiswa Riset BAZNAS - Kategori Umum" },
+                  { "id": "riset_mazawa", "title": "Beasiswa Riset BAZNAS - Kategori Mazawa" },
+                  { "id": "satu_keluarga_satu_sarjana", "title": "Satu Keluarga Satu Sarjana" },
+                  { "id": "selamatkan_tunas_bangsa", "title": "Selamatkan Tunas Bangsa" },
+                  { "id": "filantropi_islam", "title": "Beasiswa Filantropi Islam" },
+                  { "id": "kemitraan_nu", "title": "Kemitraan BAZNAS - NU Scholarship" },
+                  { "id": "kemitraan_muhammadiyah", "title": "Kemitraan BAZNAS - Muhammadiyah" },
+                  { "id": "kemitraan_persis", "title": "Kemitraan BAZNAS - PERSIS" },
+                  { "id": "kemitraan_syarikat_islam", "title": "Kemitraan - Syarikat Islam" }
+                ]
               },
               {
                 "type": "TextInput",
@@ -268,11 +282,25 @@
                 "required": true
               },
               {
-                "type": "TextInput",
+                "type": "Dropdown",
                 "name": "pendapatan",
                 "label": "Pendapatan",
-                "input-type": "number",
-                "required": true
+                "required": true,
+                "data-source": [
+                  { "id": "lt_1jt", "title": "< Rp. 1.000.000" },
+                  { "id": "1jt_2jt", "title": "Rp. 1.000.000 - Rp. 2.000.000" },
+                  { "id": "2jt_3jt", "title": "Rp. 2.000.000 - Rp. 3.000.000" },
+                  { "id": "3jt_4jt", "title": "Rp. 3.000.000 - Rp. 4.000.000" },
+                  { "id": "4jt_5jt", "title": "Rp. 4.000.000 - Rp. 5.000.000" },
+                  { "id": "5jt_6jt", "title": "Rp. 5.000.000 - Rp. 6.000.000" },
+                  { "id": "6jt_7jt", "title": "Rp. 6.000.000 - Rp. 7.000.000" },
+                  { "id": "7jt_8jt", "title": "Rp. 7.000.000 - Rp. 8.000.000" },
+                  { "id": "8jt_9jt", "title": "Rp. 8.000.000 - Rp. 9.000.000" },
+                  { "id": "9jt_10jt", "title": "Rp. 9.000.000 - Rp. 10.000.000" },
+                  { "id": "10jt_12jt", "title": "Rp. 10.000.000 - Rp. 12.000.000" },
+                  { "id": "12jt_15jt", "title": "Rp. 12.000.000 - Rp. 15.000.000" },
+                  { "id": "gt_15jt", "title": "> Rp. 15.000.000" }
+                ]
               },
               {
                 "type": "TextArea",

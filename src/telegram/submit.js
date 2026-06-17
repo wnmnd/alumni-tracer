@@ -3,8 +3,7 @@ const multer = require('multer');
 const { verifyInitData } = require('./verifyInitData');
 const { sendMessage } = require('./client');
 const { validateKiprahData } = require('../flow/validateKiprah');
-const { appendAlumniRow } = require('../google/sheets');
-const { uploadPhoto } = require('../google/drive');
+const { appendAlumniRow, uploadPhotoForRow } = require('../google/appsScript');
 
 const router = express.Router();
 const upload = multer({
@@ -28,17 +27,7 @@ router.post('/telegram/submit', upload.array('foto_terbaik', 5), async (req, res
   }
 
   try {
-    const photoLinks = [];
-    for (const [index, file] of req.files.entries()) {
-      const link = await uploadPhoto(
-        file.buffer,
-        file.originalname || `telegram-${user.id}-foto-${index + 1}.jpg`,
-        file.mimetype || 'image/jpeg'
-      );
-      photoLinks.push(link);
-    }
-
-    await appendAlumniRow({
+    const rowIndex = await appendAlumniRow({
       timestamp: new Date().toISOString(),
       channel: 'Telegram',
       telegram_username: user.username || String(user.id),
@@ -63,8 +52,16 @@ router.post('/telegram/submit', upload.array('foto_terbaik', 5), async (req, res
       pendapatan: data.pendapatan,
       jobdesk_singkat: data.jobdesk_singkat,
       kata_motivasi: data.kata_motivasi,
-      foto_links: photoLinks.join(', '),
     });
+
+    for (const [index, file] of req.files.entries()) {
+      await uploadPhotoForRow(
+        rowIndex,
+        file.buffer,
+        file.originalname || `telegram-${user.id}-foto-${index + 1}.jpg`,
+        file.mimetype || 'image/jpeg'
+      );
+    }
 
     sendMessage(user.id, 'Terima kasih! Data Tracer Alumni Anda telah berhasil disimpan.').catch(
       (err) => console.error('Failed to send Telegram confirmation:', err.response?.data || err.message)

@@ -3,8 +3,7 @@ const config = require('../config');
 const { decryptRequest, encryptResponse } = require('./encryption');
 const { downloadAndDecryptFlowMedia } = require('./mediaDownload');
 const { validateKiprahData } = require('../flow/validateKiprah');
-const { appendAlumniRow } = require('../google/sheets');
-const { uploadPhoto } = require('../google/drive');
+const { appendAlumniRow, uploadPhotoForRow } = require('../google/appsScript');
 
 const router = express.Router();
 
@@ -72,21 +71,7 @@ async function handleAction({ action, screen, data, flow_token }) {
 async function saveSubmission({ data, flowToken, normalizedPhone }) {
   const waNumber = String(flowToken || '').split('::')[0];
 
-  const photos = Array.isArray(data.foto_terbaik) ? data.foto_terbaik : [];
-  console.log(`Processing ${photos.length} uploaded photo(s) for ${waNumber}`, photos[0]);
-
-  const photoLinks = [];
-  for (const [index, photo] of photos.entries()) {
-    const { buffer, fileName } = await downloadAndDecryptFlowMedia(photo);
-    const link = await uploadPhoto(
-      buffer,
-      fileName || `${waNumber}-foto-${index + 1}.jpg`,
-      photo.mime_type || 'image/jpeg'
-    );
-    photoLinks.push(link);
-  }
-
-  await appendAlumniRow({
+  const rowIndex = await appendAlumniRow({
     timestamp: new Date().toISOString(),
     channel: 'WhatsApp',
     wa_number: waNumber,
@@ -111,8 +96,19 @@ async function saveSubmission({ data, flowToken, normalizedPhone }) {
     pendapatan: data.pendapatan,
     jobdesk_singkat: data.jobdesk_singkat,
     kata_motivasi: data.kata_motivasi,
-    foto_links: photoLinks.join(', '),
   });
+
+  const photos = Array.isArray(data.foto_terbaik) ? data.foto_terbaik : [];
+  if (photos[0]) console.log('Sample uploaded photo field shape:', Object.keys(photos[0]));
+  for (const [index, photo] of photos.entries()) {
+    const { buffer, fileName } = await downloadAndDecryptFlowMedia(photo);
+    await uploadPhotoForRow(
+      rowIndex,
+      buffer,
+      fileName || `${waNumber}-foto-${index + 1}.jpg`,
+      photo.mime_type || 'image/jpeg'
+    );
+  }
 }
 
 module.exports = router;
