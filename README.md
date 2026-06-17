@@ -5,6 +5,7 @@ Two intake channels for the same BAZNAS scholarship alumni tracing form, sharing
 1. **WhatsApp** - alumni sends **"tracer alumni"**, bot replies with a native **WhatsApp Flow** (in-chat form).
 2. **Telegram** - alumni sends **"tracer alumni"** or `/start` to **@AlumniTracer_Bot**, bot replies with a button that opens a **Mini App** form.
 3. On submit, the server validates the data, then calls a **Google Apps Script Web App** bound to the Sheet, which appends the row and uploads photos to Drive.
+4. A password-protected **dashboard** (`/dashboard`) visualizes the same Sheet data with charts in BAZNAS's brand colors, plus a chatbot (via OpenRouter) that can answer questions about the data.
 
 ## How it works
 
@@ -14,6 +15,7 @@ Two intake channels for the same BAZNAS scholarship alumni tracing form, sharing
 - **Shared**: `src/flow/validateKiprah.js` (business-rule validation used by both channels), `src/data/alumniColumns.js` (single source of truth for sheet/xlsx column order), `src/google/appsScript.js` (HTTP client for the Apps Script Web App).
 - `apps-script/Code.gs` - the script to paste into the Google Sheet (see setup below).
 - `templates/alumni_tracer_template.xlsx` - header-only template matching the form; regenerate with `npm run generate-template` if columns change.
+- **Dashboard**: `src/dashboard/session.js` (signed-cookie auth), `src/dashboard/auth.js` (login/logout), `src/dashboard/data.js` + `dataCache.js` (reads rows from Apps Script's `list_rows` action, cached 60s), `src/dashboard/chat.js` + `summarize.js` (OpenRouter chatbot with a stats-summary system prompt), `public/dashboard/login.html` + `index.html` (the actual UI, Chart.js via CDN).
 
 ## 1. Local setup
 
@@ -79,7 +81,20 @@ The script auto-creates a "Alumni Tracer Photos" Drive folder on first use and w
 
 Whenever you edit `Code.gs`, re-paste it into the Apps Script editor and re-deploy (Deploy → Manage deployments → edit → New version) - editing the file in this repo does not update the live script automatically.
 
-## 5. Run locally
+## 5. Dashboard setup
+
+Visit `https://your-app.onrender.com/dashboard` (redirects to `/login` if not authenticated).
+
+- `ADMIN_USERNAME` / `ADMIN_PASSWORD` - login credentials (defaults to `admin` / `admin123` if unset - change these for anything beyond local testing).
+- `SESSION_SECRET` - any random string, used to sign the session cookie.
+- `OPENROUTER_API_KEY` - from [openrouter.ai/keys](https://openrouter.ai/keys). The chatbot returns a friendly "not configured" message until this is set - nothing else breaks without it.
+- `OPENROUTER_MODEL` - defaults to `openrouter/free`, which auto-routes to whatever free model is currently available (avoids hardcoding a specific `:free` model slug that gets deprecated). Pin a specific model here if you want consistent behavior instead.
+
+The chatbot's context comes from server-computed aggregate stats (counts by sector/category/province/program, averages for IPK/wait time), not the raw rows - keeps prompts small and answers grounded in real numbers instead of the model inventing figures.
+
+Colors used (`public/dashboard/*.html`) were sampled directly from BAZNAS's public logo (green `#225312`, gold `#cd9933`) since no official hex palette was accessible - nudge me if your internal brand guide specifies different exact values.
+
+## 6. Run locally
 
 ```bash
 npm run dev
@@ -88,7 +103,7 @@ npm run dev
 curl "http://localhost:3000/webhook?hub.mode=subscribe&hub.verify_token=YOUR_TOKEN&hub.challenge=test"
 ```
 
-## 6. Deploy to Render
+## 7. Deploy to Render
 
 - Push this repo to GitHub/GitLab, connect it to Render.
 - Either use the `render.yaml` Blueprint (New + → Blueprint) and fill in the `sync: false` secrets in the dashboard, or give a Render API key to have the service created/updated via the API.
@@ -102,3 +117,5 @@ curl "http://localhost:3000/webhook?hub.mode=subscribe&hub.verify_token=YOUR_TOK
 - [ ] Apps Script deployed, `APPS_SCRIPT_URL`/`APPS_SCRIPT_SECRET` set, sheet tab named "Alumni"
 - [ ] Send "tracer alumni" on both channels and confirm a row + photo links land in the Sheet
 - [ ] Double-check the `foto_terbaik` payload shape in server logs on the first real WhatsApp submission - `mediaDownload.js` was built from Meta's documented spec but hasn't been verified against a live payload yet (WhatsApp sends have been blocked by the verification gate above); adjust if the actual field names differ.
+- [ ] Apps Script redeployed with the `list_rows` action (needed for the dashboard) - re-paste `Code.gs` and create a new deployment version if you deployed it before this was added.
+- [ ] `ADMIN_USERNAME`/`ADMIN_PASSWORD` changed from the defaults, `SESSION_SECRET` set, `OPENROUTER_API_KEY` set if you want the chatbot live.

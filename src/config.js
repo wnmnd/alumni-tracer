@@ -34,4 +34,15 @@ module.exports = {
     triggerKeyword: (process.env.FLOW_TRIGGER_KEYWORD || 'tracer alumni').toLowerCase(),
     publicBaseUrl: process.env.PUBLIC_BASE_URL,
   },
+
+  dashboard: {
+    adminUsername: process.env.ADMIN_USERNAME || 'admin',
+    adminPassword: process.env.ADMIN_PASSWORD || 'admin123',
+    sessionSecret: process.env.SESSION_SECRET,
+  },
+
+  openRouter: {
+    apiKey: process.env.OPENROUTER_API_KEY,
+    model: process.env.OPENROUTER_MODEL || 'openrouter/free',
+  },
 };

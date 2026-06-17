@@ -23,6 +23,10 @@ function doPost(e) {
       return jsonResponse({ success: true, link: link });
     }
 
+    if (body.action === 'list_rows') {
+      return jsonResponse({ success: true, rows: listRows() });
+    }
+
     return jsonResponse({ success: false, message: 'Unknown action: ' + body.action });
   } catch (err) {
     return jsonResponse({ success: false, message: String(err) });
@@ -70,6 +74,26 @@ function addPhoto(rowIndex, filename, mimeType, base64) {
     cell.setValue(existing ? existing + ', ' + link : link);
   }
   return link;
+}
+
+function listRows() {
+  var sheet = getSheet();
+  var lastRow = sheet.getLastRow();
+  var lastCol = sheet.getLastColumn();
+  if (lastRow < 2) return [];
+
+  var data = sheet.getRange(1, 1, lastRow, lastCol).getValues();
+  var headers = data[0];
+  var rows = [];
+  for (var i = 1; i < data.length; i++) {
+    var obj = {};
+    for (var c = 0; c < headers.length; c++) {
+      var value = data[i][c];
+      obj[headers[c]] = value instanceof Date ? value.toISOString() : value;
+    }
+    rows.push(obj);
+  }
+  return rows;
 }
 
 function getOrCreatePhotoFolder() {
