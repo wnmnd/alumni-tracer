@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: baznas-alumni-tracer
+    runtime: node
+    plan: starter
+    region: singapore
+    buildCommand: npm install --omit=dev
+    startCommand: npm start
+    healthCheckPath: /healthz
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: WHATSAPP_TOKEN
+        sync: false
+      - key: WHATSAPP_PHONE_NUMBER_ID
+        sync: false
+      - key: WHATSAPP_BUSINESS_ACCOUNT_ID
+        sync: false
+      - key: GRAPH_API_VERSION
+        value: v23.0
+      - key: WEBHOOK_VERIFY_TOKEN
+        sync: false
+      - key: META_APP_SECRET
+        sync: false
+      - key: FLOW_TRIGGER_KEYWORD
+        value: tracer alumni
+      - key: FLOW_ID
+        sync: false
+      - key: FLOW_PRIVATE_KEY
+        sync: false
+      - key: FLOW_PRIVATE_KEY_PASSPHRASE
+        sync: false
+      - key: GOOGLE_SERVICE_ACCOUNT_JSON
+        sync: false
+      - key: GOOGLE_SHEET_ID
+        sync: false
+      - key: GOOGLE_SHEET_NAME
+        value: Alumni
+      - key: GOOGLE_DRIVE_FOLDER_ID
+        sync: false

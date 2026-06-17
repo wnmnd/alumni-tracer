@@ -1,0 +1,364 @@
+{
+  "version": "7.1",
+  "data_api_version": "3.0",
+  "routing_model": {
+    "DATA_DIRI": ["KIPRAH_ALUMNI"],
+    "KIPRAH_ALUMNI": ["SUCCESS"],
+    "SUCCESS": []
+  },
+  "screens": [
+    {
+      "id": "DATA_DIRI",
+      "title": "Data Diri Alumni",
+      "data": {},
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "Form",
+            "name": "form_data_diri",
+            "children": [
+              {
+                "type": "TextInput",
+                "name": "nama_lengkap",
+                "label": "Nama Lengkap",
+                "helper-text": "Isi dengan huruf kapital",
+                "input-type": "text",
+                "required": true
+              },
+              {
+                "type": "TextInput",
+                "name": "program_beasiswa",
+                "label": "Alumni Program Beasiswa",
+                "input-type": "text",
+                "required": true
+              },
+              {
+                "type": "TextInput",
+                "name": "asal_kampus",
+                "label": "Asal Kampus",
+                "helper-text": "Jangan disingkat. Misal: Universitas Indonesia, UIN Walisongo, IAIN Ponorogo, dll",
+                "input-type": "text",
+                "required": true
+              },
+              {
+                "type": "TextInput",
+                "name": "tahun_masuk",
+                "label": "Tahun Masuk Beasiswa",
+                "input-type": "number",
+                "required": true
+              },
+              {
+                "type": "TextInput",
+                "name": "jurusan",
+                "label": "Jurusan",
+                "input-type": "text",
+                "required": true
+              },
+              {
+                "type": "RadioButtonsGroup",
+                "name": "jenis_kelamin",
+                "label": "Jenis Kelamin",
+                "required": true,
+                "data-source": [
+                  { "id": "laki_laki", "title": "Laki - Laki" },
+                  { "id": "perempuan", "title": "Perempuan" }
+                ]
+              },
+              {
+                "type": "TextInput",
+                "name": "nomor_hp",
+                "label": "Nomor HP",
+                "helper-text": "Contoh: 62877111111111",
+                "input-type": "phone",
+                "required": true
+              },
+              {
+                "type": "TextInput",
+                "name": "domisili",
+                "label": "Domisili",
+                "input-type": "text",
+                "required": true
+              },
+              {
+                "type": "Dropdown",
+                "name": "provinsi",
+                "label": "Provinsi",
+                "required": true,
+                "data-source": [
+                  { "id": "aceh", "title": "Aceh" },
+                  { "id": "sumatera_utara", "title": "Sumatera Utara" },
+                  { "id": "sumatera_barat", "title": "Sumatera Barat" },
+                  { "id": "riau", "title": "Riau" },
+                  { "id": "kepulauan_riau", "title": "Kepulauan Riau" },
+                  { "id": "jambi", "title": "Jambi" },
+                  { "id": "bengkulu", "title": "Bengkulu" },
+                  { "id": "sumatera_selatan", "title": "Sumatera Selatan" },
+                  { "id": "bangka_belitung", "title": "Kepulauan Bangka Belitung" },
+                  { "id": "lampung", "title": "Lampung" },
+                  { "id": "dki_jakarta", "title": "DKI Jakarta" },
+                  { "id": "jawa_barat", "title": "Jawa Barat" },
+                  { "id": "banten", "title": "Banten" },
+                  { "id": "jawa_tengah", "title": "Jawa Tengah" },
+                  { "id": "diy", "title": "Daerah Istimewa Yogyakarta" },
+                  { "id": "jawa_timur", "title": "Jawa Timur" },
+                  { "id": "bali", "title": "Bali" },
+                  { "id": "ntb", "title": "Nusa Tenggara Barat" },
+                  { "id": "ntt", "title": "Nusa Tenggara Timur" },
+                  { "id": "kalimantan_barat", "title": "Kalimantan Barat" },
+                  { "id": "kalimantan_tengah", "title": "Kalimantan Tengah" },
+                  { "id": "kalimantan_selatan", "title": "Kalimantan Selatan" },
+                  { "id": "kalimantan_timur", "title": "Kalimantan Timur" },
+                  { "id": "kalimantan_utara", "title": "Kalimantan Utara" },
+                  { "id": "sulawesi_utara", "title": "Sulawesi Utara" },
+                  { "id": "gorontalo", "title": "Gorontalo" },
+                  { "id": "sulawesi_tengah", "title": "Sulawesi Tengah" },
+                  { "id": "sulawesi_barat", "title": "Sulawesi Barat" },
+                  { "id": "sulawesi_selatan", "title": "Sulawesi Selatan" },
+                  { "id": "sulawesi_tenggara", "title": "Sulawesi Tenggara" },
+                  { "id": "maluku", "title": "Maluku" },
+                  { "id": "maluku_utara", "title": "Maluku Utara" },
+                  { "id": "papua", "title": "Papua" },
+                  { "id": "papua_barat", "title": "Papua Barat" },
+                  { "id": "papua_tengah", "title": "Papua Tengah" },
+                  { "id": "papua_pegunungan", "title": "Papua Pegunungan" },
+                  { "id": "papua_selatan", "title": "Papua Selatan" },
+                  { "id": "papua_barat_daya", "title": "Papua Barat Daya" }
+                ]
+              },
+              {
+                "type": "TextInput",
+                "name": "instagram_facebook",
+                "label": "Instagram/Facebook",
+                "input-type": "text",
+                "required": true
+              },
+              {
+                "type": "Footer",
+                "label": "Lanjut",
+                "on-click-action": {
+                  "name": "navigate",
+                  "next": { "type": "screen", "name": "KIPRAH_ALUMNI" },
+                  "payload": {
+                    "nama_lengkap": "${form.nama_lengkap}",
+                    "program_beasiswa": "${form.program_beasiswa}",
+                    "asal_kampus": "${form.asal_kampus}",
+                    "tahun_masuk": "${form.tahun_masuk}",
+                    "jurusan": "${form.jurusan}",
+                    "jenis_kelamin": "${form.jenis_kelamin}",
+                    "nomor_hp": "${form.nomor_hp}",
+                    "domisili": "${form.domisili}",
+                    "provinsi": "${form.provinsi}",
+                    "instagram_facebook": "${form.instagram_facebook}",
+                    "has_error": false,
+                    "validation_error": ""
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "KIPRAH_ALUMNI",
+      "title": "Kiprah Saat Ini",
+      "data": {
+        "nama_lengkap": { "type": "string", "__example__": "BUDI SANTOSO" },
+        "program_beasiswa": { "type": "string", "__example__": "Cendekia BAZNAS" },
+        "asal_kampus": { "type": "string", "__example__": "Universitas Indonesia" },
+        "tahun_masuk": { "type": "string", "__example__": "2018" },
+        "jurusan": { "type": "string", "__example__": "Teknik Informatika" },
+        "jenis_kelamin": { "type": "string", "__example__": "laki_laki" },
+        "nomor_hp": { "type": "string", "__example__": "62877111111111" },
+        "domisili": { "type": "string", "__example__": "Jakarta Selatan" },
+        "provinsi": { "type": "string", "__example__": "dki_jakarta" },
+        "instagram_facebook": { "type": "string", "__example__": "@budisantoso" },
+        "has_error": { "type": "boolean", "__example__": false },
+        "validation_error": { "type": "string", "__example__": "" }
+      },
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "Form",
+            "name": "form_kiprah",
+            "children": [
+              {
+                "type": "TextBody",
+                "text": "${data.validation_error}",
+                "visible": "${data.has_error}"
+              },
+              {
+                "type": "TextSubheading",
+                "text": "Kiprah Alumni Beasiswa BAZNAS Tentang Kelulusan dan Karir"
+              },
+              {
+                "type": "DatePicker",
+                "name": "tanggal_lulus",
+                "label": "Tanggal Lulus Pendidikan dengan Beasiswa BAZNAS",
+                "helper-text": "Jika lupa, isi perkiraan. Alumni yang belum lulus isi sesuai hari ini.",
+                "required": true
+              },
+              {
+                "type": "TextInput",
+                "name": "ipk",
+                "label": "IPK",
+                "helper-text": "Skala 0.00 - 4.00",
+                "input-type": "number",
+                "required": true
+              },
+              {
+                "type": "TextInput",
+                "name": "lama_kuliah_bulan",
+                "label": "Lama Kuliah (Bulan)",
+                "helper-text": "Dari masuk hingga lulus. Misal 48",
+                "input-type": "number",
+                "required": true
+              },
+              {
+                "type": "TextInput",
+                "name": "masa_tunggu_bulan",
+                "label": "Masa Tunggu (Bulan)",
+                "helper-text": "Masa dari pascalulus sampai mendapat pekerjaan",
+                "input-type": "number",
+                "required": true
+              },
+              {
+                "type": "RadioButtonsGroup",
+                "name": "sektor_pekerjaan",
+                "label": "Sektor Pekerjaan",
+                "required": true,
+                "data-source": [
+                  { "id": "belum_bekerja", "title": "Belum Bekerja" },
+                  { "id": "lanjut_studi", "title": "Lanjut Studi" },
+                  { "id": "sektor_privat", "title": "Sektor Privat" },
+                  { "id": "sektor_publik", "title": "Sektor Publik" }
+                ]
+              },
+              {
+                "type": "Dropdown",
+                "name": "kategori_sektor",
+                "label": "Kategori Sektor",
+                "required": true,
+                "data-source": [
+                  { "id": "belum_bekerja", "title": "Belum Bekerja" },
+                  { "id": "s2_s3", "title": "S2/S3" },
+                  { "id": "berwirausaha", "title": "Berwirausaha" },
+                  { "id": "swasta", "title": "Swasta" },
+                  { "id": "pns_p3k_lembaga_negara", "title": "PNS/P3K/Lembaga Negara" },
+                  { "id": "professional", "title": "Professional" },
+                  { "id": "bumn_bumd", "title": "BUMN/BUMD" },
+                  { "id": "lsm_ngo", "title": "LSM/NGO" },
+                  { "id": "guru_tenaga_kependidikan", "title": "Guru/Tenaga Kependidikan" }
+                ]
+              },
+              {
+                "type": "TextInput",
+                "name": "tempat_bekerja",
+                "label": "Tempat Bekerja",
+                "input-type": "text",
+                "required": true
+              },
+              {
+                "type": "TextInput",
+                "name": "posisi_jabatan",
+                "label": "Posisi/Jabatan di Tempat Kerja",
+                "input-type": "text",
+                "required": true
+              },
+              {
+                "type": "TextInput",
+                "name": "pendapatan",
+                "label": "Pendapatan",
+                "input-type": "number",
+                "required": true
+              },
+              {
+                "type": "TextArea",
+                "name": "jobdesk_singkat",
+                "label": "Jobdesk Singkat",
+                "required": true
+              },
+              {
+                "type": "TextArea",
+                "name": "kata_motivasi",
+                "label": "Kata-Kata Motivasi",
+                "required": true
+              },
+              {
+                "type": "PhotoPicker",
+                "name": "foto_terbaik",
+                "label": "Foto Terbaik (Min. 2 Foto)",
+                "description": "Upload maksimum 5 file yang didukung: image. Maks 10MB per file.",
+                "photo-source": "camera_gallery",
+                "min-uploaded-photos": 2,
+                "max-uploaded-photos": 5,
+                "max-file-size-kb": 10240
+              },
+              {
+                "type": "Footer",
+                "label": "Kirim",
+                "on-click-action": {
+                  "name": "data_exchange",
+                  "payload": {
+                    "nama_lengkap": "${data.nama_lengkap}",
+                    "program_beasiswa": "${data.program_beasiswa}",
+                    "asal_kampus": "${data.asal_kampus}",
+                    "tahun_masuk": "${data.tahun_masuk}",
+                    "jurusan": "${data.jurusan}",
+                    "jenis_kelamin": "${data.jenis_kelamin}",
+                    "nomor_hp": "${data.nomor_hp}",
+                    "domisili": "${data.domisili}",
+                    "provinsi": "${data.provinsi}",
+                    "instagram_facebook": "${data.instagram_facebook}",
+                    "tanggal_lulus": "${form.tanggal_lulus}",
+                    "ipk": "${form.ipk}",
+                    "lama_kuliah_bulan": "${form.lama_kuliah_bulan}",
+                    "masa_tunggu_bulan": "${form.masa_tunggu_bulan}",
+                    "sektor_pekerjaan": "${form.sektor_pekerjaan}",
+                    "kategori_sektor": "${form.kategori_sektor}",
+                    "tempat_bekerja": "${form.tempat_bekerja}",
+                    "posisi_jabatan": "${form.posisi_jabatan}",
+                    "pendapatan": "${form.pendapatan}",
+                    "jobdesk_singkat": "${form.jobdesk_singkat}",
+                    "kata_motivasi": "${form.kata_motivasi}",
+                    "foto_terbaik": "${form.foto_terbaik}"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "SUCCESS",
+      "title": "Berhasil",
+      "terminal": true,
+      "success": true,
+      "data": {},
+      "layout": {
+        "type": "SingleColumnLayout",
+        "children": [
+          {
+            "type": "TextHeading",
+            "text": "Terima kasih!"
+          },
+          {
+            "type": "TextBody",
+            "text": "Data Tracer Alumni Anda telah berhasil disimpan. Tim BAZNAS mengucapkan terima kasih atas partisipasi Anda."
+          },
+          {
+            "type": "Footer",
+            "label": "Selesai",
+            "on-click-action": {
+              "name": "complete",
+              "payload": {}
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

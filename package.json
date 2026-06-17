@@ -1,0 +1,29 @@
+{
+  "name": "baznas-alumni-tracer",
+  "version": "1.0.0",
+  "description": "WhatsApp chatbot that triggers a WhatsApp Flow form for BAZNAS scholarship alumni and records submissions to Google Sheets/Drive",
+  "type": "commonjs",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "generate-keys": "node scripts/generate-keys.js",
+    "register-public-key": "node scripts/register-public-key.js",
+    "create-flow": "node scripts/create-flow.js",
+    "update-flow": "node scripts/update-flow.js",
+    "publish-flow": "node scripts/publish-flow.js",
+    "generate-template": "node scripts/generate-template-xlsx.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "googleapis": "^144.0.0"
+  },
+  "devDependencies": {
+    "xlsx": "^0.18.5"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
