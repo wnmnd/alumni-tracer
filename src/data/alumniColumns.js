@@ -2,7 +2,9 @@
 // `key` must match the field names used in the Flow JSON and flowEndpoint.js.
 const ALUMNI_COLUMNS = [
   { key: 'timestamp', header: 'Timestamp' },
+  { key: 'channel', header: 'Channel' },
   { key: 'wa_number', header: 'Nomor WhatsApp' },
+  { key: 'telegram_username', header: 'Telegram Username' },
   { key: 'nama_lengkap', header: 'Nama Lengkap' },
   { key: 'program_beasiswa', header: 'Alumni Program Beasiswa' },
   { key: 'asal_kampus', header: 'Asal Kampus' },

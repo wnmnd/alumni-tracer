@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tracer Alumni BAZNAS</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root { color-scheme: light; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin: 0;
+    padding: 16px 16px 32px;
+    background: var(--tg-theme-bg-color, #ffffff);
+    color: var(--tg-theme-text-color, #111111);
+  }
+  h1 { font-size: 18px; margin: 4px 0 4px; }
+  h2 { font-size: 15px; margin: 24px 0 4px; color: var(--tg-theme-hint-color, #707579); }
+  p.hint { font-size: 12px; color: var(--tg-theme-hint-color, #707579); margin: 2px 0 8px; }
+  label { display: block; font-size: 14px; font-weight: 600; margin: 14px 0 4px; }
+  input, select, textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #d0d0d0;
+    border-radius: 8px;
+    background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+    color: inherit;
+  }
+  textarea { min-height: 70px; resize: vertical; }
+  .radio-group { display: flex; gap: 16px; margin-top: 6px; }
+  .radio-group label { display: flex; align-items: center; gap: 6px; font-weight: 400; margin: 0; }
+  .radio-group input { width: auto; }
+  button#submitBtn {
+    margin-top: 24px;
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--tg-theme-button-text-color, #fff);
+    background: var(--tg-theme-button-color, #2481cc);
+    border: none;
+    border-radius: 8px;
+  }
+  #errorBox {
+    display: none;
+    background: #ffe9e9;
+    color: #b00020;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-top: 12px;
+  }
+  #successBox { display: none; text-align: center; padding: 40px 12px; }
+</style>
+</head>
+<body>
+
+<div id="formWrap">
+  <h1>Tracer Alumni BAZNAS</h1>
+  <p class="hint">Mohon isi data dengan lengkap dan benar.</p>
+
+  <form id="alumniForm">
+    <label>Nama Lengkap *</label>
+    <p class="hint">Isi dengan huruf kapital</p>
+    <input name="nama_lengkap" required />
+
+    <label>Alumni Program Beasiswa *</label>
+    <input name="program_beasiswa" required />
+
+    <label>Asal Kampus *</label>
+    <p class="hint">Jangan disingkat. Misal: Universitas Indonesia, UIN Walisongo, IAIN Ponorogo, dll</p>
+    <input name="asal_kampus" required />
+
+    <label>Tahun Masuk Beasiswa *</label>
+    <input name="tahun_masuk" type="number" inputmode="numeric" required />
+
+    <label>Jurusan *</label>
+    <input name="jurusan" required />
+
+    <label>Jenis Kelamin *</label>
+    <div class="radio-group">
+      <label><input type="radio" name="jenis_kelamin" value="Laki - Laki" required /> Laki - Laki</label>
+      <label><input type="radio" name="jenis_kelamin" value="Perempuan" /> Perempuan</label>
+    </div>
+
+    <label>Nomor HP *</label>
+    <p class="hint">Contoh: 62877111111111</p>
+    <input name="nomor_hp" type="tel" required />
+
+    <label>Domisili *</label>
+    <input name="domisili" required />
+
+    <label>Provinsi *</label>
+    <select name="provinsi" required id="provinsiSelect"></select>
+
+    <label>Instagram/Facebook *</label>
+    <input name="instagram_facebook" required />
+
+    <h2>Kiprah Saat Ini</h2>
+    <p class="hint">Kiprah Alumni Beasiswa BAZNAS Tentang Kelulusan dan Karir</p>
+
+    <label>Tanggal Lulus Pendidikan dengan Beasiswa BAZNAS *</label>
+    <p class="hint">Jika lupa, isi perkiraan. Alumni yang belum lulus isi sesuai hari ini.</p>
+    <input name="tanggal_lulus" type="date" required />
+
+    <label>IPK *</label>
+    <p class="hint">Skala 0.00 - 4.00</p>
+    <input name="ipk" type="number" min="0" max="4" step="0.01" required />
+
+    <label>Lama Kuliah (Bulan) *</label>
+    <p class="hint">Dari masuk hingga lulus. Misal 48</p>
+    <input name="lama_kuliah_bulan" type="number" min="1" required />
+
+    <label>Masa Tunggu (Bulan) *</label>
+    <p class="hint">Masa dari pascalulus sampai mendapat pekerjaan</p>
+    <input name="masa_tunggu_bulan" type="number" min="0" required />
+
+    <label>Sektor Pekerjaan *</label>
+    <div class="radio-group" style="flex-wrap: wrap;">
+      <label><input type="radio" name="sektor_pekerjaan" value="Belum Bekerja" required /> Belum Bekerja</label>
+      <label><input type="radio" name="sektor_pekerjaan" value="Lanjut Studi" /> Lanjut Studi</label>
+      <label><input type="radio" name="sektor_pekerjaan" value="Sektor Privat" /> Sektor Privat</label>
+      <label><input type="radio" name="sektor_pekerjaan" value="Sektor Publik" /> Sektor Publik</label>
+    </div>
+
+    <label>Kategori Sektor *</label>
+    <select name="kategori_sektor" required>
+      <option value="">Pilih...</option>
+      <option value="Belum Bekerja">Belum Bekerja</option>
+      <option value="S2/S3">S2/S3</option>
+      <option value="Berwirausaha">Berwirausaha</option>
+      <option value="Swasta">Swasta</option>
+      <option value="PNS/P3K/Lembaga Negara">PNS/P3K/Lembaga Negara</option>
+      <option value="Professional">Professional</option>
+      <option value="BUMN/BUMD">BUMN/BUMD</option>
+      <option value="LSM/NGO">LSM/NGO</option>
+      <option value="Guru/Tenaga Kependidikan">Guru/Tenaga Kependidikan</option>
+    </select>
+
+    <label>Tempat Bekerja *</label>
+    <input name="tempat_bekerja" required />
+
+    <label>Posisi/Jabatan di Tempat Kerja *</label>
+    <input name="posisi_jabatan" required />
+
+    <label>Pendapatan *</label>
+    <input name="pendapatan" type="number" min="0" required />
+
+    <label>Jobdesk Singkat *</label>
+    <textarea name="jobdesk_singkat" required></textarea>
+
+    <label>Kata-Kata Motivasi *</label>
+    <textarea name="kata_motivasi" required></textarea>
+
+    <label>Foto Terbaik (Min. 2 Foto) *</label>
+    <p class="hint">Upload minimal 2, maksimal 5 foto. Maks 10MB per file.</p>
+    <input id="fotoInput" name="foto_terbaik" type="file" accept="image/*" multiple required />
+
+    <div id="errorBox"></div>
+    <button type="submit" id="submitBtn">Kirim</button>
+  </form>
+</div>
+
+<div id="successBox">
+  <h1>Terima kasih!</h1>
+  <p>Data Tracer Alumni Anda telah berhasil disimpan.</p>
+</div>
+
+<script>
+  const tg = window.Telegram?.WebApp;
+  tg?.ready();
+  tg?.expand();
+
+  const PROVINSI = [
+    'Aceh','Sumatera Utara','Sumatera Barat','Riau','Kepulauan Riau','Jambi','Bengkulu',
+    'Sumatera Selatan','Kepulauan Bangka Belitung','Lampung','DKI Jakarta','Jawa Barat',
+    'Banten','Jawa Tengah','Daerah Istimewa Yogyakarta','Jawa Timur','Bali',
+    'Nusa Tenggara Barat','Nusa Tenggara Timur','Kalimantan Barat','Kalimantan Tengah',
+    'Kalimantan Selatan','Kalimantan Timur','Kalimantan Utara','Sulawesi Utara','Gorontalo',
+    'Sulawesi Tengah','Sulawesi Barat','Sulawesi Selatan','Sulawesi Tenggara','Maluku',
+    'Maluku Utara','Papua','Papua Barat','Papua Tengah','Papua Pegunungan','Papua Selatan',
+    'Papua Barat Daya'
+  ];
+  const provinsiSelect = document.getElementById('provinsiSelect');
+  provinsiSelect.innerHTML = '<option value="">Pilih...</option>' +
+    PROVINSI.map(p => `<option value="${p}">${p}</option>`).join('');
+
+  const form = document.getElementById('alumniForm');
+  const errorBox = document.getElementById('errorBox');
+  const submitBtn = document.getElementById('submitBtn');
+
+  function showError(msg) {
+    errorBox.textContent = msg;
+    errorBox.style.display = 'block';
+    errorBox.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorBox.style.display = 'none';
+
+    const photos = document.getElementById('fotoInput').files;
+    if (photos.length < 2 || photos.length > 5) {
+      showError('Unggah minimal 2 dan maksimal 5 foto.');
+      return;
+    }
+    for (const file of photos) {
+      if (file.size > 10 * 1024 * 1024) {
+        showError(`File "${file.name}" melebihi 10MB.`);
+        return;
+      }
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Mengirim...';
+
+    const formData = new FormData(form);
+    formData.set('initData', tg?.initData || '');
+
+    try {
+      const res = await fetch('/telegram/submit', { method: 'POST', body: formData });
+      const result = await res.json();
+      if (!res.ok || !result.success) {
+        showError(result.message || 'Terjadi kesalahan. Silakan coba lagi.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Kirim';
+        return;
+      }
+      document.getElementById('formWrap').style.display = 'none';
+      document.getElementById('successBox').style.display = 'block';
+      setTimeout(() => tg?.close(), 2000);
+    } catch (err) {
+      showError('Gagal mengirim data. Periksa koneksi Anda dan coba lagi.');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Kirim';
+    }
+  });
+</script>
+</body>
+</html>

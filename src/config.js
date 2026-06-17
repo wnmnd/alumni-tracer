@@ -30,4 +30,10 @@ module.exports = {
     sheetName: process.env.GOOGLE_SHEET_NAME || 'Alumni',
     driveFolderId: process.env.GOOGLE_DRIVE_FOLDER_ID,
   },
+
+  telegram: {
+    botToken: process.env.TELEGRAM_BOT_TOKEN,
+    triggerKeyword: (process.env.FLOW_TRIGGER_KEYWORD || 'tracer alumni').toLowerCase(),
+    publicBaseUrl: process.env.PUBLIC_BASE_URL,
+  },
 };

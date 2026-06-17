@@ -12,13 +12,15 @@
     "create-flow": "node scripts/create-flow.js",
     "update-flow": "node scripts/update-flow.js",
     "publish-flow": "node scripts/publish-flow.js",
-    "generate-template": "node scripts/generate-template-xlsx.js"
+    "generate-template": "node scripts/generate-template-xlsx.js",
+    "set-telegram-webhook": "node scripts/set-telegram-webhook.js"
   },
   "dependencies": {
     "axios": "^1.7.9",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "googleapis": "^144.0.0"
+    "googleapis": "^144.0.0",
+    "multer": "^1.4.5-lts.1"
   },
   "devDependencies": {
     "xlsx": "^0.18.5"

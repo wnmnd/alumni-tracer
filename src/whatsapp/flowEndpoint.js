@@ -88,6 +88,7 @@ async function saveSubmission({ data, flowToken, normalizedPhone }) {
 
   await appendAlumniRow({
     timestamp: new Date().toISOString(),
+    channel: 'WhatsApp',
     wa_number: waNumber,
     nama_lengkap: data.nama_lengkap,
     program_beasiswa: data.program_beasiswa,
