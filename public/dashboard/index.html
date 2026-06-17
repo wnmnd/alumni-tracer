@@ -120,12 +120,13 @@
   #chatToggle:hover { background: var(--gold-light); }
   #chatPanel {
     position: fixed; bottom: 92px; right: 24px;
-    width: 340px; max-height: 480px;
+    width: 440px; max-height: 560px;
     background: #fff; border-radius: 14px;
     box-shadow: 0 12px 40px rgba(0,0,0,0.3);
     display: none; flex-direction: column;
     overflow: hidden; z-index: 50;
   }
+  @media (max-width: 480px) { #chatPanel { width: calc(100vw - 32px); right: 16px; } }
   #chatPanel.open { display: flex; }
   #chatHeader {
     background: var(--green); color: #fff; padding: 12px 16px;
@@ -137,7 +138,18 @@
   .chat-msg.bot { color: var(--ink); }
   .chat-msg .bubble { display: inline-block; padding: 8px 12px; border-radius: 10px; max-width: 85%; }
   .chat-msg.user .bubble { background: var(--cream); }
-  .chat-msg.bot .bubble { background: #f1f1f1; }
+  .chat-msg.bot .bubble {
+    background: #f1f1f1; display: block; width: 100%; max-width: 100%;
+    box-sizing: border-box; overflow-wrap: break-word;
+  }
+  .chat-msg.bot .bubble p { margin: 0 0 8px; }
+  .chat-msg.bot .bubble p:last-child { margin-bottom: 0; }
+  .chat-msg.bot .bubble ul, .chat-msg.bot .bubble ol { margin: 4px 0 8px 18px; padding: 0; }
+  .chat-msg.bot .bubble code { background: #e5e7eb; padding: 1px 5px; border-radius: 4px; font-size: 11.5px; }
+  .md-table-wrap { overflow-x: auto; margin: 4px 0 8px; width: 100%; }
+  .md-table { border-collapse: collapse; font-size: 11.5px; width: 100%; table-layout: auto; }
+  .md-table th, .md-table td { border: 1px solid #ddd; padding: 5px 8px; text-align: left; word-break: break-word; }
+  .md-table th { background: var(--green); color: #fff; }
   .typing-bubble { display: inline-flex; gap: 4px; align-items: center; padding: 10px 12px; }
   .typing-bubble span {
     width: 6px; height: 6px; border-radius: 50%;
@@ -522,11 +534,100 @@ let chatHistory = [];
 
 chatToggle.addEventListener('click', () => chatPanel.classList.toggle('open'));
 
+// Minimal, safe markdown renderer: builds DOM nodes directly (no innerHTML
+// with model output) so there's no script-injection surface, while still
+// rendering the tables/bold/lists the model tends to produce.
+function appendInline(parent, text) {
+  const regex = /\*\*(.+?)\*\*|`(.+?)`/g;
+  let lastIndex = 0;
+  let match;
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) parent.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+    const el = document.createElement(match[1] !== undefined ? 'strong' : 'code');
+    el.textContent = match[1] !== undefined ? match[1] : match[2];
+    parent.appendChild(el);
+    lastIndex = regex.lastIndex;
+  }
+  if (lastIndex < text.length) parent.appendChild(document.createTextNode(text.slice(lastIndex)));
+}
+function buildMdTable(lines) {
+  const wrap = document.createElement('div');
+  wrap.className = 'md-table-wrap';
+  const table = document.createElement('table');
+  table.className = 'md-table';
+  const rows = lines.filter((l) => !/^\|?[\s:-]+\|[\s:|-]*$/.test(l));
+  rows.forEach((rowLine, idx) => {
+    let cells = rowLine.split('|').map((c) => c.trim());
+    if (cells[0] === '') cells = cells.slice(1);
+    if (cells[cells.length - 1] === '') cells = cells.slice(0, -1);
+    const tr = document.createElement('tr');
+    cells.forEach((cellText) => {
+      const cell = document.createElement(idx === 0 ? 'th' : 'td');
+      appendInline(cell, cellText);
+      tr.appendChild(cell);
+    });
+    table.appendChild(tr);
+  });
+  wrap.appendChild(table);
+  return wrap;
+}
+function renderMarkdown(text, container) {
+  const lines = text.split('\n');
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    if (!line.trim()) { i++; continue; }
+
+    if (line.trim().startsWith('|')) {
+      const tableLines = [];
+      while (i < lines.length && lines[i].trim().startsWith('|')) { tableLines.push(lines[i].trim()); i++; }
+      container.appendChild(buildMdTable(tableLines));
+      continue;
+    }
+
+    if (/^[-*]\s+/.test(line.trim()) || /^\d+\.\s+/.test(line.trim())) {
+      const ordered = /^\d+\.\s+/.test(line.trim());
+      const list = document.createElement(ordered ? 'ol' : 'ul');
+      while (i < lines.length && (/^[-*]\s+/.test(lines[i].trim()) || /^\d+\.\s+/.test(lines[i].trim()))) {
+        const itemText = lines[i].trim().replace(/^[-*]\s+/, '').replace(/^\d+\.\s+/, '');
+        const li = document.createElement('li');
+        appendInline(li, itemText);
+        list.appendChild(li);
+        i++;
+      }
+      container.appendChild(list);
+      continue;
+    }
+
+    if (/^#{1,6}\s+/.test(line.trim())) {
+      const p = document.createElement('p');
+      const strong = document.createElement('strong');
+      appendInline(strong, line.trim().replace(/^#{1,6}\s+/, ''));
+      p.appendChild(strong);
+      container.appendChild(p);
+      i++;
+      continue;
+    }
+
+    const paraLines = [];
+    while (i < lines.length && lines[i].trim() && !lines[i].trim().startsWith('|') && !/^[-*]\s+/.test(lines[i].trim()) && !/^\d+\.\s+/.test(lines[i].trim())) {
+      paraLines.push(lines[i]);
+      i++;
+    }
+    const p = document.createElement('p');
+    appendInline(p, paraLines.join(' '));
+    container.appendChild(p);
+  }
+}
+
 function appendMsg(role, text) {
   const div = document.createElement('div');
   div.className = 'chat-msg ' + role;
-  div.innerHTML = '<span class="bubble"></span>';
-  div.querySelector('.bubble').textContent = text;
+  const bubble = document.createElement('span');
+  bubble.className = 'bubble';
+  if (role === 'bot') renderMarkdown(text, bubble);
+  else bubble.textContent = text;
+  div.appendChild(bubble);
   chatLog.appendChild(div);
   chatLog.scrollTop = chatLog.scrollHeight;
   return div;
