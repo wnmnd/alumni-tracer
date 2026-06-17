@@ -88,9 +88,11 @@ Visit `https://your-app.onrender.com/dashboard` (redirects to `/login` if not au
 - `ADMIN_USERNAME` / `ADMIN_PASSWORD` - login credentials (defaults to `admin` / `admin123` if unset - change these for anything beyond local testing).
 - `SESSION_SECRET` - any random string, used to sign the session cookie.
 - `OPENROUTER_API_KEY` - from [openrouter.ai/keys](https://openrouter.ai/keys). The chatbot returns a friendly "not configured" message until this is set - nothing else breaks without it.
-- `OPENROUTER_MODEL` - defaults to `openrouter/free`, which auto-routes to whatever free model is currently available (avoids hardcoding a specific `:free` model slug that gets deprecated). Pin a specific model here if you want consistent behavior instead.
+- `OPENROUTER_MODEL` - defaults to `openrouter/free`, which auto-routes to whatever free model is currently available (avoids hardcoding a specific `:free` model slug that gets deprecated). Currently pinned to `openai/gpt-oss-120b:free` in production. Pin a specific model here if you want consistent behavior.
 
-The chatbot's context comes from server-computed aggregate stats (counts by sector/category/province/program, averages for IPK/wait time), not the raw rows - keeps prompts small and answers grounded in real numbers instead of the model inventing figures.
+The chatbot's context (`src/dashboard/chat.js`) combines two things: server-computed aggregate stats (`summarize.js` - counts by sector/category/province/program, averages for IPK/wait time) for quick totals, plus a CSV dump of every individual row (`rowsToCsv.js`, capped at the 500 most recent if the sheet grows past that) so it can answer specific lookups too ("who has the highest IPK", "list alumni who became entrepreneurs"), not just aggregates. Contact columns (phone numbers, Telegram username, Instagram/Facebook, photo links) are excluded from what's sent to OpenRouter - the chatbot is for analytical questions, not contact lookup (use the Tabel Data page for that, which never leaves the server).
+
+Free-tier reasoning models can take 20-40s to respond on complex questions - the chat widget shows a typing indicator and the backend timeout is 60s to accommodate this.
 
 Colors used (`public/dashboard/*.html`) were sampled directly from BAZNAS's public logo (green `#225312`, gold `#cd9933`) since no official hex palette was accessible - nudge me if your internal brand guide specifies different exact values.
 
