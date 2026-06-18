@@ -120,18 +120,18 @@
   #chatToggle:hover { background: var(--gold-light); }
   #chatPanel {
     position: fixed; bottom: 92px; right: 24px;
-    width: 440px; max-height: 560px;
+    width: 440px; height: min(560px, calc(100vh - 140px));
     background: #fff; border-radius: 14px;
     box-shadow: 0 12px 40px rgba(0,0,0,0.3);
     display: none; flex-direction: column;
     overflow: hidden; z-index: 50;
-    transition: width 0.2s ease, max-height 0.2s ease;
+    transition: width 0.2s ease, height 0.2s ease;
   }
   @media (max-width: 480px) { #chatPanel { width: calc(100vw - 32px); right: 16px; } }
   #chatPanel.open { display: flex; }
   #chatPanel.expanded {
     width: min(880px, calc(100vw - 48px));
-    max-height: min(760px, calc(100vh - 140px));
+    height: min(760px, calc(100vh - 140px));
   }
   #chatHeader {
     background: var(--green); color: #fff; padding: 12px 16px;
