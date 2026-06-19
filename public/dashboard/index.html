@@ -57,6 +57,39 @@
 
   main { max-width: 1320px; margin: 0 auto; padding: 24px; }
 
+  .filter-toggle-row { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; flex-wrap: wrap; }
+  .filter-toggle-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: #fff; border: 1px solid #d8d4ca; color: var(--green-dark);
+    padding: 9px 16px; border-radius: 10px; font-size: 13px; font-weight: 600;
+    cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .filter-toggle-btn:hover { background: var(--cream); }
+  .filter-toggle-btn.active { background: var(--green); color: #fff; border-color: var(--green); }
+  .filter-result-info { font-size: 13px; color: #6b7280; }
+  .filter-result-info strong { color: var(--green-dark); }
+
+  .filter-bar {
+    display: none;
+    background: #fff; border-radius: 14px; padding: 16px 18px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07); margin-bottom: 18px;
+    flex-wrap: wrap; gap: 12px; align-items: flex-end;
+  }
+  .filter-bar.open { display: flex; }
+  .filter-field { display: flex; flex-direction: column; gap: 4px; }
+  .filter-field label { font-size: 11px; font-weight: 600; color: #6b7280; }
+  .filter-field input, .filter-field select {
+    padding: 8px 10px; border: 1px solid #d8d4ca; border-radius: 8px;
+    font-size: 13px; background: #fff; min-width: 150px;
+  }
+  .filter-field input:focus, .filter-field select:focus { outline: none; border-color: var(--green); }
+  #searchInput { min-width: 200px; }
+  #resetFilterBtn {
+    border: 1px solid var(--green); background: #fff; color: var(--green);
+    padding: 8px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; height: 37px;
+  }
+  #resetFilterBtn:hover { background: var(--cream); }
+
   .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 22px; }
   .kpi-card {
     background: #fff;
@@ -200,6 +233,27 @@
   <div id="errorMsg"></div>
 
   <div id="content" style="display:none;">
+    <div class="filter-toggle-row">
+      <button id="filterToggleBtn" class="filter-toggle-btn" aria-expanded="false">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+        Filter Data
+      </button>
+      <span class="filter-result-info">Menampilkan <strong id="filteredCount">0</strong> dari <strong id="totalCount">0</strong> alumni</span>
+    </div>
+    <div class="filter-bar" id="filterBar">
+      <div class="filter-field">
+        <label>Cari</label>
+        <input id="searchInput" type="text" placeholder="Nama, kampus, jurusan, dll..." />
+      </div>
+      <div class="filter-field"><label>Channel</label><select id="filterChannel"></select></div>
+      <div class="filter-field"><label>Sektor Pekerjaan</label><select id="filterSektor"></select></div>
+      <div class="filter-field"><label>Provinsi</label><select id="filterProvinsi"></select></div>
+      <div class="filter-field"><label>Program Beasiswa</label><select id="filterProgram"></select></div>
+      <div class="filter-field"><label>Tahun Masuk</label><select id="filterTahun"></select></div>
+      <div class="filter-field"><label>Jenis Kelamin</label><select id="filterGender"></select></div>
+      <button id="resetFilterBtn">Reset Filter</button>
+    </div>
+
     <div class="kpis">
       <div class="kpi-card">
         <div class="icon-badge green">
@@ -358,7 +412,9 @@ function average(rows, field) {
   if (!vals.length) return null;
   return vals.reduce((a, b) => a + b, 0) / vals.length;
 }
+const activeAnimations = new WeakMap();
 function animateValue(el, end, decimals, suffix) {
+  if (activeAnimations.has(el)) cancelAnimationFrame(activeAnimations.get(el));
   const start = performance.now();
   const duration = 900;
   function tick(now) {
@@ -366,16 +422,26 @@ function animateValue(el, end, decimals, suffix) {
     const eased = 1 - Math.pow(1 - progress, 3);
     const current = end * eased;
     el.textContent = (decimals ? current.toFixed(decimals) : Math.round(current)) + (suffix || '');
-    if (progress < 1) requestAnimationFrame(tick);
+    if (progress < 1) activeAnimations.set(el, requestAnimationFrame(tick));
+    else activeAnimations.delete(el);
   }
-  requestAnimationFrame(tick);
+  activeAnimations.set(el, requestAnimationFrame(tick));
 }
 
 function baseOptions(extra) {
   return Object.assign({ responsive: true, maintainAspectRatio: false, animation: { duration: 700, easing: 'easeOutQuart' } }, extra);
 }
 
+// Charts get re-rendered on every filter change, so each canvas needs its
+// previous Chart.js instance torn down first - otherwise Chart.js throws
+// "Canvas is already in use" on the second render.
+function destroyExisting(canvasId) {
+  const existing = Chart.getChart(canvasId);
+  if (existing) existing.destroy();
+}
+
 function makeDoughnutChart(canvasId, labels, data, centerText) {
+  destroyExisting(canvasId);
   new Chart(document.getElementById(canvasId), {
     type: 'doughnut',
     data: { labels, datasets: [{ data, backgroundColor: PALETTE, borderWidth: 2, borderColor: '#fff' }] },
@@ -387,6 +453,7 @@ function makeDoughnutChart(canvasId, labels, data, centerText) {
   });
 }
 function makePolarChart(canvasId, labels, data) {
+  destroyExisting(canvasId);
   new Chart(document.getElementById(canvasId), {
     type: 'polarArea',
     data: { labels, datasets: [{ data, backgroundColor: PALETTE }] },
@@ -397,6 +464,7 @@ function makePolarChart(canvasId, labels, data) {
   });
 }
 function makeBarChart(canvasId, labels, data, horizontal, colors, fullLabels) {
+  destroyExisting(canvasId);
   new Chart(document.getElementById(canvasId), {
     type: 'bar',
     data: { labels, datasets: [{ data, backgroundColor: colors || labels.map((_, i) => PALETTE[i % PALETTE.length]), borderRadius: 6, maxBarThickness: 42 }] },
@@ -411,6 +479,7 @@ function makeBarChart(canvasId, labels, data, horizontal, colors, fullLabels) {
   });
 }
 function makeLineChart(canvasId, labels, data) {
+  destroyExisting(canvasId);
   const canvas = document.getElementById(canvasId);
   new Chart(canvas, {
     type: 'line',
@@ -440,6 +509,7 @@ function makeLineChart(canvasId, labels, data) {
   });
 }
 function makeScatterChart(canvasId, pointsBySektor) {
+  destroyExisting(canvasId);
   const datasets = Object.entries(pointsBySektor).map(([sektor, points]) => ({
     label: sektor,
     data: points,
@@ -517,6 +587,67 @@ function renderCharts(rows) {
   makeBarChart('chartPendapatan', pendapatanShort, pendapatan.map((e) => e[1]), false, null, pendapatanFull);
 }
 
+// --- Filters (hidden by default; toggled via #filterToggleBtn) ---
+let allRows = [];
+const FILTER_SELECT_IDS = ['filterChannel', 'filterSektor', 'filterProvinsi', 'filterProgram', 'filterTahun', 'filterGender'];
+const SEARCH_FIELDS = ['Nama Lengkap', 'Asal Kampus', 'Jurusan', 'Tempat Bekerja', 'Posisi/Jabatan di Tempat Kerja', 'Domisili'];
+
+function distinctValues(rows, field) {
+  const set = new Set();
+  rows.forEach((r) => { const v = (r[field] || '').toString().trim(); if (v) set.add(v); });
+  return Array.from(set).sort();
+}
+function populateSelect(id, values, allLabel) {
+  const el = document.getElementById(id);
+  el.innerHTML = '<option value="">' + allLabel + '</option>' + values.map((v) => `<option value="${v}">${v}</option>`).join('');
+}
+function debounce(fn, delay) {
+  let timer;
+  return (...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), delay); };
+}
+
+function applyFilters() {
+  const search = document.getElementById('searchInput').value.trim().toLowerCase();
+  const channel = document.getElementById('filterChannel').value;
+  const sektor = document.getElementById('filterSektor').value;
+  const provinsi = document.getElementById('filterProvinsi').value;
+  const program = document.getElementById('filterProgram').value;
+  const tahun = document.getElementById('filterTahun').value;
+  const gender = document.getElementById('filterGender').value;
+
+  const filteredRows = allRows.filter((r) => {
+    if (channel && r['Channel'] !== channel) return false;
+    if (sektor && r['Sektor Pekerjaan'] !== sektor) return false;
+    if (provinsi && r['Provinsi'] !== provinsi) return false;
+    if (program && r['Alumni Program Beasiswa'] !== program) return false;
+    if (tahun && String(r['Tahun Masuk Beasiswa']) !== tahun) return false;
+    if (gender && r['Jenis Kelamin'] !== gender) return false;
+    if (search) {
+      const haystack = SEARCH_FIELDS.map((f) => (r[f] || '').toString().toLowerCase()).join(' ');
+      if (!haystack.includes(search)) return false;
+    }
+    return true;
+  });
+
+  document.getElementById('filteredCount').textContent = filteredRows.length;
+  document.getElementById('totalCount').textContent = allRows.length;
+  renderCharts(filteredRows);
+}
+
+document.getElementById('filterToggleBtn').addEventListener('click', (e) => {
+  const btn = e.currentTarget;
+  const open = document.getElementById('filterBar').classList.toggle('open');
+  btn.classList.toggle('active', open);
+  btn.setAttribute('aria-expanded', String(open));
+});
+document.getElementById('searchInput').addEventListener('input', debounce(applyFilters, 300));
+FILTER_SELECT_IDS.forEach((id) => document.getElementById(id).addEventListener('change', applyFilters));
+document.getElementById('resetFilterBtn').addEventListener('click', () => {
+  document.getElementById('searchInput').value = '';
+  FILTER_SELECT_IDS.forEach((id) => { document.getElementById(id).value = ''; });
+  applyFilters();
+});
+
 async function loadDashboard() {
   try {
     const res = await fetch('/api/dashboard-data');
@@ -527,10 +658,18 @@ async function loadDashboard() {
     const result = await res.json();
     if (!result.success) throw new Error(result.message || 'Gagal memuat data');
 
-    const rows = result.rows.filter((r) => r['Channel'] !== 'Test');
+    allRows = result.rows.filter((r) => r['Channel'] !== 'Test');
+
+    populateSelect('filterChannel', distinctValues(allRows, 'Channel'), 'Semua Channel');
+    populateSelect('filterSektor', distinctValues(allRows, 'Sektor Pekerjaan'), 'Semua Sektor');
+    populateSelect('filterProvinsi', distinctValues(allRows, 'Provinsi'), 'Semua Provinsi');
+    populateSelect('filterProgram', distinctValues(allRows, 'Alumni Program Beasiswa'), 'Semua Program');
+    populateSelect('filterTahun', distinctValues(allRows, 'Tahun Masuk Beasiswa'), 'Semua Tahun');
+    populateSelect('filterGender', distinctValues(allRows, 'Jenis Kelamin'), 'Semua');
+
     document.getElementById('loadingMsg').style.display = 'none';
     document.getElementById('content').style.display = 'block';
-    renderCharts(rows);
+    applyFilters();
   } catch (err) {
     document.getElementById('loadingMsg').style.display = 'none';
     const errBox = document.getElementById('errorMsg');

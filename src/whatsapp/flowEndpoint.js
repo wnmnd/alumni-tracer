@@ -4,6 +4,7 @@ const { decryptRequest, encryptResponse } = require('./encryption');
 const { downloadAndDecryptFlowMedia } = require('./mediaDownload');
 const { validateKiprahData } = require('../flow/validateKiprah');
 const { appendAlumniRow, uploadPhotoForRow } = require('../google/appsScript');
+const { cancel } = require('../reminder/scheduler');
 
 const router = express.Router();
 
@@ -70,6 +71,7 @@ async function handleAction({ action, screen, data, flow_token }) {
 
 async function saveSubmission({ data, flowToken, normalizedPhone }) {
   const waNumber = String(flowToken || '').split('::')[0];
+  cancel(`wa:${waNumber}`);
 
   const rowIndex = await appendAlumniRow({
     timestamp: new Date().toISOString(),

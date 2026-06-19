@@ -4,6 +4,7 @@ const { verifyInitData } = require('./verifyInitData');
 const { sendMessage } = require('./client');
 const { validateKiprahData } = require('../flow/validateKiprah');
 const { appendAlumniRow, uploadPhotoForRow } = require('../google/appsScript');
+const { cancel } = require('../reminder/scheduler');
 
 const router = express.Router();
 const upload = multer({
@@ -27,6 +28,8 @@ router.post('/telegram/submit', upload.array('foto_terbaik', 5), async (req, res
   }
 
   try {
+    cancel(`tg:${user.id}`);
+
     const rowIndex = await appendAlumniRow({
       timestamp: new Date().toISOString(),
       channel: 'Telegram',

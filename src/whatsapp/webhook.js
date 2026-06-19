@@ -2,6 +2,8 @@ const express = require('express');
 const config = require('../config');
 const { sendTextMessage, sendFlowMessage } = require('./client');
 const { isValidSignature } = require('./signature');
+const { schedule } = require('../reminder/scheduler');
+const { REMINDER_DELAY_MS, REMINDER_MESSAGE } = require('../reminder/constants');
 
 const router = express.Router();
 
@@ -46,6 +48,14 @@ async function handleMessage(message) {
     if (text.includes(config.whatsapp.triggerKeyword)) {
       const flowToken = `${from}::${Date.now()}`;
       await sendFlowMessage(from, { flowToken, screen: 'DATA_DIRI' });
+      schedule(
+        `wa:${from}`,
+        async () => {
+          const reminderToken = `${from}::${Date.now()}`;
+          await sendFlowMessage(from, { flowToken: reminderToken, screen: 'DATA_DIRI', bodyText: REMINDER_MESSAGE });
+        },
+        REMINDER_DELAY_MS
+      );
     } else {
       await sendTextMessage(
         from,
